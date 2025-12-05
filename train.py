@@ -14,8 +14,7 @@ def train_eagle(df_train, df_val, models, N=20, K=32, P = 0.5):
     ranker.populate_prompts(combined)
     train_ids = df_train["prompt_id"].tolist()
     print("Updating GLOBAL ELO on training set data ")
-    for pid in tqdm(train_ids, desc="Global ELO updates", unit="prompt"):
-        ranker.train_global_elo(pid)
+    ranker.train_global_elo(train_ids)
     return ranker
 
 def evaluate_eagle(ranker, df, models):
@@ -102,6 +101,8 @@ splits = {
 df_train = pd.read_parquet("hf://datasets/notdiamond/repliqa_gpt4o_gpt4omini_evals/" + splits["train"]).head(1000)
 df_val   = pd.read_parquet("hf://datasets/notdiamond/repliqa_gpt4o_gpt4omini_evals/" + splits["val"]).head(100)
 df_test  = pd.read_parquet("hf://datasets/notdiamond/repliqa_gpt4o_gpt4omini_evals/" + splits["test"]).head(100)
+
+
 
 models = ["gpt-4o-2024-08-06", "gpt-4o-mini-2024-07-18"]
 

@@ -4,20 +4,39 @@ import numpy as np
 import os
 from copy import deepcopy
 from dotenv import load_dotenv
+import pickle
 
 load_dotenv()
 class EagleRanker():
 
     class Embedder:
-        def __init__(self, api_key: str):
+        def __init__(self, api_key: str, cache_path="embedding_cache.pkl"):
             self.client = OpenAI(api_key=api_key)
             self.model_name = "text-embedding-3-large"
-        def embed(self, text: str):
+            self.cache_path = cache_path
+
+            # Load cache if exists, else empty dict
+            if os.path.exists(cache_path):
+                with open(cache_path, "rb") as f:
+                    self.cache = pickle.load(f)
+            else:
+                self.cache = {}
+
+        def embed(self, text: str): #adding caching to avoid recomputing embeddings
+            if text in self.cache:
+                return self.cache[text]
             response = self.client.embeddings.create(
                 model=self.model_name,
                 input=text
             )
-            return response.data[0].embedding
+
+            emb = response.data[0].embedding
+
+            self.cache[text] = emb
+            with open(self.cache_path, "wb") as f:
+                pickle.dump(self.cache, f)
+
+            return emb
 
     def __init__(self, models: list[str], P=0.5, N=30, K=32): #from paper
         self.models = models
