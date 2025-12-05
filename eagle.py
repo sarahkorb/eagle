@@ -52,6 +52,7 @@ class EagleRanker():
     def populate_prompts(self, df: pd.DataFrame):
   
         for idx, row in df.iterrows():
+            prompt_id = row["prompt_id"]
             print("on id: ", idx)
             score_big  = row["gpt-4o-2024-08-06/score"]
             score_small = row["gpt-4o-mini-2024-07-18/score"]
@@ -71,8 +72,9 @@ class EagleRanker():
             embedding = self.embedder.embed(text_for_embed)
 
             print("now adding to prompts dict")
+            print("Storing prompt: ", prompt_id)
 
-            self.prompts[idx] = {
+            self.prompts[prompt_id] = {
                 "embedding": np.array(embedding, dtype=float),
                 "winner": winner,
                 "loser": loser
@@ -134,7 +136,7 @@ class EagleRanker():
 
     def make_model_prediction(self, prompt_text):
         emb = np.array(self.embedder.embed(prompt_text), dtype=float)
-        self.compute_local_elo(emb)
+        self.get_local_elo(emb)
         scores = {m: self.get_combined_score(m) for m in self.models}
         model_list = list(self.models)
         if len(model_list) == 2:  

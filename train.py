@@ -13,6 +13,7 @@ def train_eagle(df_train, df_val, models, N=20, K=32, P = 0.5):
     print("Embedding and populating prompts dict")
     ranker.populate_prompts(combined)
     train_ids = df_train["prompt_id"].tolist()
+    print(ranker.prompts)
     print("Updating GLOBAL ELO on training set data ")
     ranker.train_global_elo(train_ids)
     return ranker
