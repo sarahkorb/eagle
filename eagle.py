@@ -107,9 +107,9 @@ class EagleRanker():
             return 0.0
         return np.dot(a, b) / denom
 
-    def get_nearest_neighbors(self, embedding):
+    def get_nearest_neighbors(self, embedding): #INCORRECT
         sim_scores = []
-        for pid, entry in self.prompts.items():
+        for pid, entry in self.prompts.items(): ## NEED TO SEPARATE TRAINING AND VAL!! 
             sim_score = self.cosine_similarity(embedding, entry["embedding"])
             sim_scores.append((pid, sim_score))
 
